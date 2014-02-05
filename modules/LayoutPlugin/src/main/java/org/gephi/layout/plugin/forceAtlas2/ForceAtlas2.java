@@ -77,7 +77,6 @@ public class ForceAtlas2 implements Layout {
     private final ForceAtlas2Builder layoutBuilder;
     private DynamicModel dynamicModel;
     private double edgeWeightInfluence;
-    private double imprecision;
     private double scalingRatio;
     private double gravity;
     private boolean outboundAttractionDistribution;
@@ -218,18 +217,24 @@ public class ForceAtlas2 implements Layout {
                 NodeData nData = n.getNodeData();
                 ForceAtlas2LayoutData nLayout = nData.getLayoutData();
                 if (!nData.isFixed()) {
-
+                    // Limit force
+                    double force = Math.sqrt(nLayout.dx*nLayout.dx + nLayout.dy*nLayout.dy);
+                    double maxForce = 10;
+                    if(force > maxForce){
+                        nLayout.dx = nLayout.dx * maxForce / force;
+                        nLayout.dy = nLayout.dy * maxForce / force;
+                    }
+                    
                     // Adaptive auto-speed: the speed of each node is lowered
                     // when the node swings.
                     double swinging = nLayout.mass * Math.sqrt((nLayout.old_dx - nLayout.dx) * (nLayout.old_dx - nLayout.dx) + (nLayout.old_dy - nLayout.dy) * (nLayout.old_dy - nLayout.dy));
-                    double factor = 0.1 / (1f + Math.sqrt(swinging));
-
-                    double df = Math.sqrt(Math.pow(nLayout.dx, 2) + Math.pow(nLayout.dy, 2));
-                    factor = Math.min(factor * df, 10.) / df;
-
-                    double x = nData.x() + nLayout.dx * factor;
-                    double y = nData.y() + nLayout.dy * factor;
-
+                    double traction = Math.sqrt((nLayout.old_dx + nLayout.dx) * (nLayout.old_dx + nLayout.dx) + (nLayout.old_dy + nLayout.dy) * (nLayout.old_dy + nLayout.dy)) / 2;
+                    
+                    double nodespeed = 0.1 * Math.log(1 + traction) / (1 + Math.sqrt(swinging));
+                    
+                    double x = nData.x() + nLayout.dx * nodespeed;
+                    double y = nData.y() + nLayout.dy * nodespeed;
+                    
                     nData.setX((float) x);
                     nData.setY((float) y);
                 }
@@ -239,16 +244,15 @@ public class ForceAtlas2 implements Layout {
                 NodeData nData = n.getNodeData();
                 ForceAtlas2LayoutData nLayout = nData.getLayoutData();
                 if (!nData.isFixed()) {
-
+                    
                     // Adaptive auto-speed: the speed of each node is lowered
                     // when the node swings.
                     double swinging = nLayout.mass * Math.sqrt((nLayout.old_dx - nLayout.dx) * (nLayout.old_dx - nLayout.dx) + (nLayout.old_dy - nLayout.dy) * (nLayout.old_dy - nLayout.dy));
                     double traction = Math.sqrt((nLayout.old_dx + nLayout.dx) * (nLayout.old_dx + nLayout.dx) + (nLayout.old_dy + nLayout.dy) * (nLayout.old_dy + nLayout.dy)) / 2;
                     
-                    double nodespeed = Math.log(1 + (Math.E - 1) * (imprecision) + nLayout.convergenceEstimation) * Math.log(1 + traction) / (1 + Math.sqrt(swinging));
+                    double nodespeed = nLayout.convergenceEstimation * Math.log(1 + traction) / (1 + Math.sqrt(swinging));
                     
-                    double convergenceEstimation = Math.sqrt(nodespeed * (nLayout.dx * nLayout.dx + nLayout.dy * nLayout.dy)) / (1 + Math.sqrt(swinging));
-                    nLayout.convergenceEstimation = 0.9 * nLayout.convergenceEstimation + 0.1 * convergenceEstimation;
+                    nLayout.convergenceEstimation = Math.min(1, Math.sqrt(nodespeed * (nLayout.dx * nLayout.dx + nLayout.dy * nLayout.dy)) / (1 + Math.sqrt(swinging)));
                     
                     double x = nData.x() + nLayout.dx * nodespeed;
                     double y = nData.y() + nLayout.dy * nodespeed;
@@ -341,14 +345,6 @@ public class ForceAtlas2 implements Layout {
                     "getEdgeWeightInfluence", "setEdgeWeightInfluence"));
 
             properties.add(LayoutProperty.createProperty(
-                    this, Double.class,
-                    NbBundle.getMessage(getClass(), "ForceAtlas2.jitterTolerance.name"),
-                    FORCEATLAS2_PERFORMANCE,
-                    "ForceAtlas2.jitterTolerance.name",
-                    NbBundle.getMessage(getClass(), "ForceAtlas2.jitterTolerance.desc"),
-                    "getJitterTolerance", "setJitterTolerance"));
-
-            properties.add(LayoutProperty.createProperty(
                     this, Boolean.class,
                     NbBundle.getMessage(getClass(), "ForceAtlas2.barnesHutOptimization.name"),
                     FORCEATLAS2_PERFORMANCE,
@@ -388,11 +384,7 @@ public class ForceAtlas2 implements Layout {
         }
 
         // Tuning
-        if (nodesCount >= 100) {
-            setScalingRatio(2.0);
-        } else {
-            setScalingRatio(10.0);
-        }
+        setScalingRatio(2.0);
         setStrongGravityMode(false);
         setGravity(1.);
 
@@ -400,10 +392,9 @@ public class ForceAtlas2 implements Layout {
         setOutboundAttractionDistribution(false);
         setLinLogMode(false);
         setAdjustSizes(false);
-        setEdgeWeightInfluence(1.);
+        setEdgeWeightInfluence(0.);
 
         // Performance
-        setJitterTolerance(0.1d);
         if (nodesCount >= 1000) {
             setBarnesHutOptimize(true);
         } else {
@@ -444,14 +435,6 @@ public class ForceAtlas2 implements Layout {
 
     public void setEdgeWeightInfluence(Double edgeWeightInfluence) {
         this.edgeWeightInfluence = edgeWeightInfluence;
-    }
-
-    public Double getJitterTolerance() {
-        return imprecision;
-    }
-
-    public void setJitterTolerance(Double jitterTolerance) {
-        this.imprecision = jitterTolerance;
     }
 
     public Boolean isLinLogMode() {
