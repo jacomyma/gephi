@@ -67,6 +67,7 @@
                         <publicPackage>org.gephi.layout.plugin.force.yifanHu</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.forceAtlas</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.forceAtlas2</publicPackage>
+                        <publicPackage>org.gephi.layout.plugin.forceAtlas25</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.fruchterman</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.labelAdjust</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.multilevel</publicPackage>

@@ -39,20 +39,29 @@ Contributor(s):
 
 Portions Copyrighted 2011 Gephi Consortium.
  */
-package org.gephi.layout.plugin.forceAtlas2;
+package org.gephi.layout.plugin.forceAtlas25;
 
-import org.gephi.graph.spi.LayoutData;
+import org.gephi.graph.api.Node;
+import org.gephi.layout.plugin.forceAtlas25.ForceFactory.RepulsionForce;
 
 /**
- * Data stored in Nodes and used by ForceAtlas2
+ *
  * @author Mathieu Jacomy
  */
-public class ForceAtlas2LayoutData implements LayoutData {
-    //Data
+public class OperationNodeNodeRepulse extends Operation {
 
-    public double dx = 0;
-    public double dy = 0;
-    public double old_dx = 0;
-    public double old_dy = 0;
-    public double mass = 1;
+    private final Node n1;
+    private final Node n2;
+    private final RepulsionForce f;
+
+    public OperationNodeNodeRepulse(Node n1, Node n2, RepulsionForce f) {
+        this.n1 = n1;
+        this.n2 = n2;
+        this.f = f;
+    }
+
+    @Override
+    public void execute() {
+        f.apply(n1, n2);
+    }
 }

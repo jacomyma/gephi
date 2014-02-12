@@ -39,15 +39,15 @@ Contributor(s):
 
 Portions Copyrighted 2011 Gephi Consortium.
  */
-package org.gephi.layout.plugin.forceAtlas2;
+package org.gephi.layout.plugin.forceAtlas25;
 
 import org.gephi.graph.spi.LayoutData;
 
 /**
- * Data stored in Nodes and used by ForceAtlas2
+ * Data stored in Nodes and used by ForceAtlas25
  * @author Mathieu Jacomy
  */
-public class ForceAtlas2LayoutData implements LayoutData {
+public class ForceAtlas25LayoutData implements LayoutData {
     //Data
 
     public double dx = 0;
@@ -55,4 +55,5 @@ public class ForceAtlas2LayoutData implements LayoutData {
     public double old_dx = 0;
     public double old_dy = 0;
     public double mass = 1;
+    public double convergenceEstimation = 1;
 }

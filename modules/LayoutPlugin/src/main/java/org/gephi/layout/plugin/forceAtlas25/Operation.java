@@ -39,20 +39,13 @@ Contributor(s):
 
 Portions Copyrighted 2011 Gephi Consortium.
  */
-package org.gephi.layout.plugin.forceAtlas2;
-
-import org.gephi.graph.spi.LayoutData;
+package org.gephi.layout.plugin.forceAtlas25;
 
 /**
- * Data stored in Nodes and used by ForceAtlas2
+ *
  * @author Mathieu Jacomy
  */
-public class ForceAtlas2LayoutData implements LayoutData {
-    //Data
+public abstract class Operation {
 
-    public double dx = 0;
-    public double dy = 0;
-    public double old_dx = 0;
-    public double old_dy = 0;
-    public double mass = 1;
+    public abstract void execute();
 }

@@ -39,20 +39,66 @@ Contributor(s):
 
 Portions Copyrighted 2011 Gephi Consortium.
  */
-package org.gephi.layout.plugin.forceAtlas2;
+package org.gephi.layout.plugin.forceAtlas25;
 
-import org.gephi.graph.spi.LayoutData;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import org.gephi.layout.spi.Layout;
+import org.gephi.layout.spi.LayoutBuilder;
+import org.gephi.layout.spi.LayoutUI;
+import org.openide.util.NbBundle;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
- * Data stored in Nodes and used by ForceAtlas2
+ * Layout Builder
  * @author Mathieu Jacomy
  */
-public class ForceAtlas2LayoutData implements LayoutData {
-    //Data
+@ServiceProvider(service = LayoutBuilder.class)
+public class ForceAtlas25Builder implements LayoutBuilder {
 
-    public double dx = 0;
-    public double dy = 0;
-    public double old_dx = 0;
-    public double old_dy = 0;
-    public double mass = 1;
+    private ForceAtlas25UI ui = new ForceAtlas25UI();
+
+    @Override
+    public String getName() {
+        return NbBundle.getMessage(ForceAtlas25.class, "ForceAtlas25.name");
+    }
+
+    @Override
+    public LayoutUI getUI() {
+        return ui;
+    }
+
+    @Override
+    public ForceAtlas25 buildLayout() {
+        ForceAtlas25 layout = new ForceAtlas25(this);
+        return layout;
+    }
+
+    private class ForceAtlas25UI implements LayoutUI {
+
+        @Override
+        public String getDescription() {
+            return NbBundle.getMessage(ForceAtlas25.class, "ForceAtlas25.description");
+        }
+
+        @Override
+        public Icon getIcon() {
+            return null;
+        }
+
+        @Override
+        public JPanel getSimplePanel(Layout layout) {
+            return null;
+        }
+
+        @Override
+        public int getQualityRank() {
+            return 4;
+        }
+
+        @Override
+        public int getSpeedRank() {
+            return 4;
+        }
+    }
 }

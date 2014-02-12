@@ -1,0 +1,104 @@
+# Translation file for Gephi.
+# Copyright (C) 2011 Gephi contributors.
+# This file is distributed under the same license as the Gephi package.
+# Gephi Team <gephi.team@lists.launchpad.net>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Gephi 0.8\n"
+"Report-Msgid-Bugs-To: gephi.team@lists.launchpad.net\n"
+"POT-Creation-Date: 2011-08-05 14:52+0200\n"
+"PO-Revision-Date: 2011-08-05 14:52+0200\n"
+"Last-Translator: Mathieu Bastian <gephi.team@lists.launchpad.net>\n"
+"Language-Team: English <https://launchpad.net/~gephi.team>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "ForceAtlas25.name"
+msgstr "ForceAtlas 2.5"
+
+msgid "ForceAtlas25.description"
+msgstr ""
+"Quality layout: a linear-attraction linear-repulsion model with few "
+"approximations (BarnesHut). Speed automatically computed."
+
+msgid "ForceAtlas25.tuning"
+msgstr "Tuning"
+
+msgid "ForceAtlas25.behavior"
+msgstr "Behavior Alternatives"
+
+msgid "ForceAtlas25.performance"
+msgstr "Performance"
+
+msgid "ForceAtlas25.threads"
+msgstr "Threads"
+
+msgid "ForceAtlas25.scalingRatio.name"
+msgstr "Scaling"
+
+msgid "ForceAtlas25.scalingRatio.desc"
+msgstr "How much repulsion you want. More makes a more sparse graph."
+
+msgid "ForceAtlas25.gravity.name"
+msgstr "Gravity"
+
+msgid "ForceAtlas25.gravity.desc"
+msgstr "Attracts nodes to the center. Prevents islands from drifting away."
+
+msgid "ForceAtlas25.strongGravityMode.name"
+msgstr "Stronger Gravity"
+
+msgid "ForceAtlas25.strongGravityMode.desc"
+msgstr "A stronger gravity law"
+
+msgid "ForceAtlas25.distributedAttraction.name"
+msgstr "Dissuade Hubs"
+
+msgid "ForceAtlas25.distributedAttraction.desc"
+msgstr ""
+"Distributes attraction along outbound edges. Hubs attract less and thus are "
+"pushed to the borders."
+
+msgid "ForceAtlas25.linLogMode.name"
+msgstr "LinLog mode"
+
+msgid "ForceAtlas25.linLogMode.desc"
+msgstr ""
+"Switch ForceAtlas' model from lin-lin to lin-log (tribute to Andreas Noack). "
+"Makes clusters more tight."
+
+msgid "ForceAtlas25.adjustSizes.name"
+msgstr "Prevent Overlap"
+
+msgid "ForceAtlas25.adjustSizes.desc"
+msgstr ""
+"Use only when spatialized. Should not be used with \"Approximate Repulsion\""
+
+msgid "ForceAtlas25.barnesHutOptimization.name"
+msgstr "Approximate Repulsion"
+
+msgid "ForceAtlas25.barnesHutOptimization.desc"
+msgstr ""
+"Barnes Hut optimization: n complexity to n.ln(n) ; allows larger graphs."
+
+msgid "ForceAtlas25.barnesHutTheta.name"
+msgstr "Approximation"
+
+msgid "ForceAtlas25.barnesHutTheta.desc"
+msgstr "Theta of the Barnes Hut optimization."
+
+msgid "ForceAtlas25.edgeWeightInfluence.name"
+msgstr "Edge Weight Influence"
+
+msgid "ForceAtlas25.edgeWeightInfluence.desc"
+msgstr ""
+"How much influence you give to the edges weight. 0 is \"no influence\" and 1 "
+"is \"normal\"."
+
+msgid "ForceAtlas25.threads.name"
+msgstr "Threads number"
+
+msgid "ForceAtlas25.threads.desc"
+msgstr "More threads means more speed if your cores can handle it."
