@@ -92,6 +92,8 @@ public class ForceAtlas25 implements Layout {
     //Dynamic Weight
     private TimeInterval timeInterval;
     private ExecutorService pool;
+    private boolean converged;
+    
     private int layout_step;
 
     public ForceAtlas25(ForceAtlas25Builder layoutBuilder) {
@@ -128,6 +130,8 @@ public class ForceAtlas25 implements Layout {
         
         layout_step = 0;
         
+        setConverged(false);
+
         // Benchmark
         benchmark();
 
@@ -270,10 +274,14 @@ public class ForceAtlas25 implements Layout {
             }
         }
         
+        layout_step++;
+        
         // Benchmark
         benchmark();
         
-        layout_step++;
+        if(layout_step >= 100){
+            setConverged(true);
+        }
         
         graph.readUnlockAll();
     }
@@ -338,7 +346,13 @@ public class ForceAtlas25 implements Layout {
         }
 
 
-        System.out.println("#benchmark,"+layout_step+","+neal + "," + (1-aleph_c));
+        String layout_signature;
+        if(linLogMode){
+            layout_signature = "FA25_LL";
+        } else {
+            layout_signature = "FA25";
+        }
+        System.out.println("#benchmark,"+layout_signature+","+layout_step+","+neal + "," + (1-aleph_c));
     }
     
     public boolean doLineSegmentsIntersect(double px, double py, double p2x, double p2y, double qx, double qy, double q2x, double q2y){
@@ -375,7 +389,15 @@ public class ForceAtlas25 implements Layout {
 
     @Override
     public boolean canAlgo() {
-        return graphModel != null;
+        return !isConverged() && graphModel != null;
+    }
+
+    public void setConverged(boolean converged) {
+        this.converged = converged;
+    }
+
+    public boolean isConverged() {
+        return converged;
     }
 
     @Override

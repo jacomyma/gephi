@@ -308,10 +308,14 @@ public class YifanHuLayout extends AbstractLayout implements Layout {
 //        System.out.println("electric: " + electricEnergy + "    spring: " + springEnergy);
 //        System.out.println("energy0 = " + energy0 + "   energy = " + energy);
         
+        layout_step++;
+        
         // Benchmark
         benchmark();
         
-        layout_step++;
+        if(layout_step >= 100){
+            setConverged(true);
+        }
         
         graph.readUnlock();
     }
@@ -376,7 +380,7 @@ public class YifanHuLayout extends AbstractLayout implements Layout {
         }
 
 
-        System.out.println("#benchmark,"+layout_step+","+neal + "," + (1-aleph_c));
+        System.out.println("#benchmark,YH,"+layout_step+","+neal + "," + (1-aleph_c));
     }
     
     public boolean doLineSegmentsIntersect(double px, double py, double p2x, double p2y, double qx, double qy, double q2x, double q2y){
