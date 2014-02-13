@@ -67,7 +67,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 /**
- * ForceAtlas 2 Layout, manages each step of the computations.
+ * ForceAtlas 2 Layout, manages each layout_step of the computations.
  * @author Mathieu Jacomy
  */
 public class ForceAtlas25 implements Layout {
@@ -92,6 +92,7 @@ public class ForceAtlas25 implements Layout {
     //Dynamic Weight
     private TimeInterval timeInterval;
     private ExecutorService pool;
+    private int layout_step;
 
     public ForceAtlas25(ForceAtlas25Builder layoutBuilder) {
         this.layoutBuilder = layoutBuilder;
@@ -124,6 +125,12 @@ public class ForceAtlas25 implements Layout {
 
         pool = Executors.newFixedThreadPool(threadCount);
         currentThreadCount = threadCount;
+        
+        layout_step = 0;
+        
+        // Benchmark
+        benchmark();
+
     }
 
     @Override
@@ -264,68 +271,74 @@ public class ForceAtlas25 implements Layout {
         }
         
         // Benchmark
-        if(false){
-            // Let's run the benchmark.
+        benchmark();
+        
+        layout_step++;
+        
+        graph.readUnlockAll();
+    }
+    
+    public void benchmark(){
+        Node[] nodes = graph.getNodes().toArray();
+        Edge[] edges = graph.getEdgesAndMetaEdges().toArray();
 
-            // We compute Noack's normalized^endv atedge length
-            double card_e = graph.getEdgeCount();
-            double card_n2 = graph.getNodeCount() * graph.getNodeCount();
-            double sum_edges_distances = 0;
-            for(Edge e : edges){
-                NodeData sourceData = e.getSource().getNodeData();
-                NodeData targetData = e.getTarget().getNodeData();
-                double distance = Math.sqrt((sourceData.x() - targetData.x())*(sourceData.x() - targetData.x()) + (sourceData.y() - targetData.y())*(sourceData.y() - targetData.y()));
-                sum_edges_distances += distance;
-            }
-            double sum_npairs_distances = 0;
-            for (Node n1 : nodes) {
-                NodeData nData1 = n1.getNodeData();
-                for (Node n2 : nodes) {
-                    NodeData nData2 = n2.getNodeData();
-                    if(n1.getId() < n2.getId()){
-                        double distance = Math.sqrt((nData1.x() - nData2.x())*(nData1.x() - nData2.x()) + (nData1.y() - nData2.y())*(nData1.y() - nData2.y()));
-                        sum_npairs_distances += distance;
-                    }
+        
+        // We compute Noack's normalized^endv atedge length
+        double card_e = graph.getEdgeCount();
+        double card_n2 = graph.getNodeCount() * graph.getNodeCount();
+        double sum_edges_distances = 0;
+        for(Edge e : edges){
+            NodeData sourceData = e.getSource().getNodeData();
+            NodeData targetData = e.getTarget().getNodeData();
+            double distance = Math.sqrt((sourceData.x() - targetData.x())*(sourceData.x() - targetData.x()) + (sourceData.y() - targetData.y())*(sourceData.y() - targetData.y()));
+            sum_edges_distances += distance;
+        }
+        double sum_npairs_distances = 0;
+        for (Node n1 : nodes) {
+            NodeData nData1 = n1.getNodeData();
+            for (Node n2 : nodes) {
+                NodeData nData2 = n2.getNodeData();
+                if(n1.getId() < n2.getId()){
+                    double distance = Math.sqrt((nData1.x() - nData2.x())*(nData1.x() - nData2.x()) + (nData1.y() - nData2.y())*(nData1.y() - nData2.y()));
+                    sum_npairs_distances += distance;
                 }
             }
-            double neal = (sum_edges_distances / card_e) / (sum_npairs_distances / card_n2);
+        }
+        double neal = (sum_edges_distances / card_e) / (sum_npairs_distances / card_n2);
 
-            // We compute the number of edge crossings
-            // http://www.dcs.gla.ac.uk/publications/PAPERS/6621/final.pdf
-            double c_all = (card_e * (card_e - 1)) / 2;
-            double c_impossible = 0;
-            for (Node n : nodes) {
-                double degree = graph.getDegree(n);
-                c_impossible += degree * (degree - 1);
-            }
-            c_impossible = c_impossible/2;
-            double c_max = c_all - c_impossible;
-            double aleph_c;
-            if(c_max > 0){
-                double c = 0;
-                for(Edge e1 : edges){
-                    NodeData sourceData1 = e1.getSource().getNodeData();
-                    NodeData targetData1 = e1.getTarget().getNodeData();
-                    for(Edge e2 : edges){
-                        if(e1.getId() < e2.getId()){
-                            NodeData sourceData2 = e2.getSource().getNodeData();
-                            NodeData targetData2 = e2.getTarget().getNodeData();
-                            if(doLineSegmentsIntersect(sourceData1.x(), sourceData1.y(), targetData1.x(), targetData1.y(), sourceData2.x(), sourceData2.y(), targetData2.x(), targetData2.y())){
-                                c += 1;
-                            }
+        // We compute the number of edge crossings
+        // http://www.dcs.gla.ac.uk/publications/PAPERS/6621/final.pdf
+        double c_all = (card_e * (card_e - 1)) / 2;
+        double c_impossible = 0;
+        for (Node n : nodes) {
+            double degree = graph.getDegree(n);
+            c_impossible += degree * (degree - 1);
+        }
+        c_impossible = c_impossible/2;
+        double c_max = c_all - c_impossible;
+        double aleph_c;
+        if(c_max > 0){
+            double c = 0;
+            for(Edge e1 : edges){
+                NodeData sourceData1 = e1.getSource().getNodeData();
+                NodeData targetData1 = e1.getTarget().getNodeData();
+                for(Edge e2 : edges){
+                    if(e1.getId() < e2.getId()){
+                        NodeData sourceData2 = e2.getSource().getNodeData();
+                        NodeData targetData2 = e2.getTarget().getNodeData();
+                        if(doLineSegmentsIntersect(sourceData1.x(), sourceData1.y(), targetData1.x(), targetData1.y(), sourceData2.x(), sourceData2.y(), targetData2.x(), targetData2.y())){
+                            c += 1;
                         }
                     }
                 }
-                aleph_c = 1 - c / c_max;
-            } else {
-                aleph_c = 0;
             }
-
-
-            System.out.println("#benchmark,"+neal + "," + (1-aleph_c));
+            aleph_c = 1 - c / c_max;
+        } else {
+            aleph_c = 0;
         }
-        
-        graph.readUnlockAll();
+
+
+        System.out.println("#benchmark,"+layout_step+","+neal + "," + (1-aleph_c));
     }
     
     public boolean doLineSegmentsIntersect(double px, double py, double p2x, double p2y, double qx, double qy, double q2x, double q2y){
