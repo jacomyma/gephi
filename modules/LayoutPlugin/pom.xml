@@ -74,6 +74,7 @@
                         <publicPackage>org.gephi.layout.plugin.random</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.rotate</publicPackage>
                         <publicPackage>org.gephi.layout.plugin.scale</publicPackage>
+                        <publicPackage>org.gephi.layout.plugin.forceAtlas3</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

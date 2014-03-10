@@ -1,0 +1,98 @@
+# Translation file for Gephi.
+# Copyright (C) 2011 Gephi contributors.
+# This file is distributed under the same license as the Gephi package.
+# 
+# Translators:
+# Célio CJr <celiofariajr@gmail.com>, 2011.
+# Célio Faria Jr. <celiofariajr@gmail.com>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: Gephi\n"
+"Report-Msgid-Bugs-To: https://github.com/gephi/gephi/issues\n"
+"POT-Creation-Date: 2011-08-05 14:52+0200\n"
+"PO-Revision-Date: 2011-09-22 12:08+0000\n"
+"Last-Translator: Célio Faria Jr. <celiofariajr@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/gephi/language/pt_BR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "ForceAtlas3.name"
+msgstr "ForceAtlas 3"
+
+msgid "ForceAtlas3.description"
+msgstr "Disposição por qualidade: um modelo de atração linear e repulsão linear com poucas aproximações (BarnesHut). Velocidade calculada automaticamente."
+
+msgid "ForceAtlas3.tuning"
+msgstr "Afinação"
+
+msgid "ForceAtlas3.behavior"
+msgstr "Alternativas de comportamento"
+
+msgid "ForceAtlas3.performance"
+msgstr "Desempenho"
+
+msgid "ForceAtlas3.threads"
+msgstr "Threads"
+
+msgid "ForceAtlas3.scalingRatio.name"
+msgstr "Dimensionamento"
+
+msgid "ForceAtlas3.scalingRatio.desc"
+msgstr "Quanta repulsão você deseja. Valores maiores resultam em grafos mais dispersos."
+
+msgid "ForceAtlas3.gravity.name"
+msgstr "Gravidade"
+
+msgid "ForceAtlas3.gravity.desc"
+msgstr "Atrai os nós para o centro. Previne que as ilhas se afastem."
+
+msgid "ForceAtlas3.strongGravityMode.name"
+msgstr "Gravidade mais forte"
+
+msgid "ForceAtlas3.strongGravityMode.desc"
+msgstr "Uma lei de gravidade mais forte"
+
+msgid "ForceAtlas3.distributedAttraction.name"
+msgstr "Dissuadir hubs"
+
+msgid "ForceAtlas3.distributedAttraction.desc"
+msgstr "Distribui a atração ao longo das arestas de saída. Hubs atraem menos e são, portanto, empurrados para as bordas."
+
+msgid "ForceAtlas3.linLogMode.name"
+msgstr "Modo LinLog"
+
+msgid "ForceAtlas3.linLogMode.desc"
+msgstr "Alternar o modelo ForceAtlas entre lin-lin e lin-log (homenagem a Andreas Noack). Torna os clusters mais apertado."
+
+msgid "ForceAtlas3.adjustSizes.name"
+msgstr "Evitar sobreposição"
+
+msgid "ForceAtlas3.adjustSizes.desc"
+msgstr "Usar apenas quando já está distribuído. Não deve ser usado juntamente com a opção \"Aproximar repulsão\""
+
+msgid "ForceAtlas3.barnesHutOptimization.name"
+msgstr "Aproximar repulsão"
+
+msgid "ForceAtlas3.barnesHutOptimization.desc"
+msgstr "Otimização de Barnes Hut: complexidade entre n e n.ln(n) ; permite grafos maiores."
+
+msgid "ForceAtlas3.barnesHutTheta.name"
+msgstr "Aproximação"
+
+msgid "ForceAtlas3.barnesHutTheta.desc"
+msgstr "Valor Theta da otimização de Barnes Hut."
+
+msgid "ForceAtlas3.edgeWeightInfluence.name"
+msgstr "Influência do peso das arestas"
+
+msgid "ForceAtlas3.edgeWeightInfluence.desc"
+msgstr "Quanto o peso das arestas deve influenciar a disposição. 0 significa \"nenhuma influência\" e 1 é \"influência normal\"."
+
+msgid "ForceAtlas3.threads.name"
+msgstr "Número de threads"
+
+msgid "ForceAtlas3.threads.desc"
+msgstr "Mais threads obtém mais velocidade, se os núcleos do seu processador puderem suportar."
