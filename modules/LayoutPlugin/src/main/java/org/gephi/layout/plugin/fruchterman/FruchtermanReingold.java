@@ -78,8 +78,8 @@ public class FruchtermanReingold extends AbstractLayout implements Layout {
     }
 
     public void resetPropertiesValues() {
-        speed = 100;
-        area = 500;
+        speed = 10;
+        area = 1000;
         gravity = 0;
     }
 
