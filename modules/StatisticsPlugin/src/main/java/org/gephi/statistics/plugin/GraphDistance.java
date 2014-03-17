@@ -255,12 +255,13 @@ public class GraphDistance implements Statistics, LongTask {
                     int predecessor_index = indicies.get(predecessor);
                     delta[predecessor_index] += (theta[predecessor_index] / theta[w_index]) * (1 + delta[w_index]);
                     // THE BRIDGENESS HAPPENS 
-                    if(d[w_index] > 2){
+                    if(d[w_index] > 3){
                         delta_bridge[predecessor_index] += (theta[predecessor_index] / theta[w_index]) * (1 + delta_bridge[w_index]);
                     }
                 }
                 if (w != s) {
                     betweenness[w_index] += delta[w_index];
+                    bridgeness[w_index] += delta_bridge[w_index];
                 }
             }
             count++;
