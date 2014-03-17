@@ -77,10 +77,13 @@ import org.openide.util.Lookup;
 public class GraphDistance implements Statistics, LongTask {
 
     public static final String BETWEENNESS = "betweenesscentrality";
+    public static final String BRIDGENESS = "bridgenesscentrality";
     public static final String CLOSENESS = "closnesscentrality";
     public static final String ECCENTRICITY = "eccentricity";
     /** */
     private double[] betweenness;
+    /** */
+    private double[] bridgeness;
     /** */
     private double[] closeness;
     /** */
@@ -140,6 +143,7 @@ public class GraphDistance implements Statistics, LongTask {
         AttributeColumn eccentricityCol = nodeTable.getColumn(ECCENTRICITY);
         AttributeColumn closenessCol = nodeTable.getColumn(CLOSENESS);
         AttributeColumn betweenessCol = nodeTable.getColumn(BETWEENNESS);
+        AttributeColumn bridgenessCol = nodeTable.getColumn(BRIDGENESS);
         if (eccentricityCol == null) {
             eccentricityCol = nodeTable.addColumn(ECCENTRICITY, "Eccentricity", AttributeType.DOUBLE, AttributeOrigin.COMPUTED, new Double(0));
         }
@@ -149,12 +153,16 @@ public class GraphDistance implements Statistics, LongTask {
         if (betweenessCol == null) {
             betweenessCol = nodeTable.addColumn(BETWEENNESS, "Betweenness Centrality", AttributeType.DOUBLE, AttributeOrigin.COMPUTED, new Double(0));
         }
+        if (bridgenessCol == null) {
+            bridgenessCol = nodeTable.addColumn(BRIDGENESS, "Bridgeness Centrality", AttributeType.DOUBLE, AttributeOrigin.COMPUTED, new Double(0));
+        }
 
         hgraph.readLock();
 
         N = hgraph.getNodeCount();
 
         betweenness = new double[N];
+        bridgeness = new double[N];
         eccentricity = new double[N];
         closeness = new double[N];
         diameter = 0;
@@ -172,6 +180,7 @@ public class GraphDistance implements Statistics, LongTask {
         int count = 0;
         for (Node s : hgraph.getNodes()) {
             Stack<Node> S = new Stack<Node>();
+            System.out.println("# s is "+s.getNodeData().getLabel());
 
             LinkedList<Node>[] P = new LinkedList[N];
             double[] theta = new double[N];
@@ -235,14 +244,19 @@ public class GraphDistance implements Statistics, LongTask {
             shortestPaths += reachable;
 
             double[] delta = new double[N];
+            double[] delta_bridge = new double[N];
             while (!S.empty()) {
                 Node w = S.pop();
+                System.out.println("  w is "+w.getNodeData().getLabel());
                 int w_index = indicies.get(w);
-                ListIterator<Node> iter1 = P[w_index].listIterator();
-                while (iter1.hasNext()) {
-                    Node u = iter1.next();
-                    int u_index = indicies.get(u);
-                    delta[u_index] += (theta[u_index] / theta[w_index]) * (1 + delta[w_index]);
+                ListIterator<Node> predecessorIter = P[w_index].listIterator();
+                while (predecessorIter.hasNext()) {
+                    Node predecessor = predecessorIter.next();
+                    int predecessor_index = indicies.get(predecessor);
+                    delta[predecessor_index] += (theta[predecessor_index] / theta[w_index]) * (1 + delta[w_index]);
+                    if(d[w_index] > 3){
+                        delta_bridge[predecessor_index] += (theta[predecessor_index] / theta[w_index]) * (1 + delta_bridge[w_index]);
+                    }
                 }
                 if (w != s) {
                     betweenness[w_index] += delta[w_index];
@@ -264,14 +278,17 @@ public class GraphDistance implements Statistics, LongTask {
 
             if (!isDirected) {
                 betweenness[s_index] /= 2;
+                bridgeness[s_index] /= 2;
             }
             if (isNormalized) {
                 closeness[s_index] = (closeness[s_index] == 0) ? 0 : 1.0 / closeness[s_index];
                 betweenness[s_index] /= isDirected ? (N - 1) * (N - 2) : (N - 1) * (N - 2) / 2;
+                bridgeness[s_index] /= isDirected ? (N - 1) * (N - 2) : (N - 1) * (N - 2) / 2;
             }
             row.setValue(eccentricityCol, eccentricity[s_index]);
             row.setValue(closenessCol, closeness[s_index]);
             row.setValue(betweenessCol, betweenness[s_index]);
+            row.setValue(bridgenessCol, bridgeness[s_index]);
         }
         hgraph.readUnlock();
     }
@@ -332,11 +349,13 @@ public class GraphDistance implements Statistics, LongTask {
      */
     public String getReport() {
         String htmlIMG1 = "";
+        String htmlIMG1bis = "";
         String htmlIMG2 = "";
         String htmlIMG3 = "";
         try {
             TempDir tempDir = TempDirUtils.createTempDir();
             htmlIMG1 = createImageFile(tempDir, betweenness, "Betweenness Centrality Distribution", "Value", "Count");
+            htmlIMG1bis = createImageFile(tempDir, bridgeness, "Bridgeness Centrality Distribution", "Value", "Count");
             htmlIMG2 = createImageFile(tempDir, closeness, "Closeness Centrality Distribution", "Value", "Count");
             htmlIMG3 = createImageFile(tempDir, eccentricity, "Eccentricity Distribution", "Value", "Count");
         } catch (IOException ex) {
@@ -354,6 +373,7 @@ public class GraphDistance implements Statistics, LongTask {
                 + "Average Path length: " + avgDist + "<br />"
                 + "Number of shortest paths: " + shortestPaths + "<br /><br />"
                 + htmlIMG1 + "<br /><br />"
+                + htmlIMG1bis + "<br /><br />"
                 + htmlIMG2 + "<br /><br />"
                 + htmlIMG3
                 + "<br /><br />" + "<h2> Algorithm: </h2>"
