@@ -180,7 +180,7 @@ public class GraphDistance implements Statistics, LongTask {
         int count = 0;
         for (Node s : hgraph.getNodes()) {
             Stack<Node> S = new Stack<Node>();
-            System.out.println("# s is "+s.getNodeData().getLabel());
+            // System.out.println("# s is "+s.getNodeData().getLabel());
 
             LinkedList<Node>[] P = new LinkedList[N];
             double[] theta = new double[N];
@@ -247,14 +247,15 @@ public class GraphDistance implements Statistics, LongTask {
             double[] delta_bridge = new double[N];
             while (!S.empty()) {
                 Node w = S.pop();
-                System.out.println("  w is "+w.getNodeData().getLabel());
+                // System.out.println("  w is "+w.getNodeData().getLabel());
                 int w_index = indicies.get(w);
                 ListIterator<Node> predecessorIter = P[w_index].listIterator();
                 while (predecessorIter.hasNext()) {
                     Node predecessor = predecessorIter.next();
                     int predecessor_index = indicies.get(predecessor);
                     delta[predecessor_index] += (theta[predecessor_index] / theta[w_index]) * (1 + delta[w_index]);
-                    if(d[w_index] > 3){
+                    // THE BRIDGENESS HAPPENS 
+                    if(d[w_index] > 2){
                         delta_bridge[predecessor_index] += (theta[predecessor_index] / theta[w_index]) * (1 + delta_bridge[w_index]);
                     }
                 }
