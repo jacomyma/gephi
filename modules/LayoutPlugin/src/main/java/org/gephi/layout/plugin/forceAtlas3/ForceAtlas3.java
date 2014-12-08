@@ -248,15 +248,29 @@ public class ForceAtlas3 implements Layout {
             nLayout.average_dx = (nLayout.average_dx) / nLayout.mass;
             nLayout.average_dy = (nLayout.average_dy) / nLayout.mass;
         }
+        
+        // Share displacement
+        for(Node n : nodes){
+            NodeData nData = n.getNodeData();
+            ForceAtlas3LayoutData nLayout = nData.getLayoutData();
+
+            double flocknessInertia = 0.5;
+            nLayout.flockness = flocknessInertia * nLayout.flockness + (1 - flocknessInertia) * (nLayout.average_dx * nLayout.dy + nLayout.dx * nLayout.average_dy);
+
+            double averageDisplacement = Math.sqrt(nLayout.average_dx * nLayout.average_dx + nLayout.average_dy * nLayout.average_dy);
+            double ratio = 1;
+            nLayout.dx += ratio * nLayout.average_dx;
+            nLayout.dy += ratio * nLayout.average_dy;
+            nData.setSize((float) (10f + Math.sqrt(averageDisplacement)));
+        }
 
         // Compute and store swinging info
         for(Node n : nodes){
-            double flocknessInertia = 0.8;
             NodeData nData = n.getNodeData();
             ForceAtlas3LayoutData nLayout = nData.getLayoutData();
             nLayout.swinging = Math.sqrt((nLayout.old_dx - nLayout.dx) * (nLayout.old_dx - nLayout.dx) + (nLayout.old_dy - nLayout.dy) * (nLayout.old_dy - nLayout.dy));
             nLayout.traction = Math.sqrt((nLayout.old_dx + nLayout.dx) * (nLayout.old_dx + nLayout.dx) + (nLayout.old_dy + nLayout.dy) * (nLayout.old_dy + nLayout.dy)) / 2;
-            nLayout.flockness = flocknessInertia * nLayout.flockness + (1 - flocknessInertia) * nLayout.average_dy * nLayout.dx + nLayout.average_dx * nLayout.average_dy;
+            
         }
         
         // Average these
@@ -320,7 +334,12 @@ public class ForceAtlas3 implements Layout {
                     double nodespeed = nLayout.convergenceEstimation * Math.log(1 + nLayout.traction) / (1 + Math.sqrt(nLayout.mass * nLayout.swinging));
                     nLayout.convergenceEstimation = Math.min(1, Math.sqrt(nodespeed * (nLayout.dx * nLayout.dx + nLayout.dy * nLayout.dy)) / (1 + Math.sqrt(nLayout.mass * nLayout.swinging)));
                     
-                    nData.setSize(0.1f * Math.min((float)Math.exp(0.1 * nLayout.flockness), 200));
+                    // nData.setSize(0.1f * Math.min((float)Math.exp(0.1 * nLayout.flockness), 200));
+                    /*if(nLayout.flockness > 1){
+                        nData.setColor(1, 0, 0);
+                    } else {
+                        nData.setColor(0.6f, 0.6f, 0.6f);
+                    }*/
                     
                     double x = nData.x() + nLayout.dx * nodespeed;
                     double y = nData.y() + nLayout.dy * nodespeed;

@@ -89,6 +89,7 @@ public class ForceAtlas25 implements Layout {
     private int currentThreadCount;
     private Region rootRegion;
     double outboundAttCompensation = 1;
+    private double slowDown = 5;
     //Dynamic Weight
     private TimeInterval timeInterval;
     private ExecutorService pool;
@@ -241,7 +242,7 @@ public class ForceAtlas25 implements Layout {
                     double swinging = nLayout.mass * Math.sqrt((nLayout.old_dx - nLayout.dx) * (nLayout.old_dx - nLayout.dx) + (nLayout.old_dy - nLayout.dy) * (nLayout.old_dy - nLayout.dy));
                     double traction = Math.sqrt((nLayout.old_dx + nLayout.dx) * (nLayout.old_dx + nLayout.dx) + (nLayout.old_dy + nLayout.dy) * (nLayout.old_dy + nLayout.dy)) / 2;
                     
-                    double nodespeed = 0.1 * Math.log(1 + traction) / (1 + Math.sqrt(swinging));
+                    double nodespeed = 0.1 * Math.log(1 + traction) / (1 + Math.sqrt(swinging)) / slowDown;
                     
                     double x = nData.x() + nLayout.dx * nodespeed;
                     double y = nData.y() + nLayout.dy * nodespeed;
@@ -261,7 +262,7 @@ public class ForceAtlas25 implements Layout {
                     double swinging = nLayout.mass * Math.sqrt((nLayout.old_dx - nLayout.dx) * (nLayout.old_dx - nLayout.dx) + (nLayout.old_dy - nLayout.dy) * (nLayout.old_dy - nLayout.dy));
                     double traction = Math.sqrt((nLayout.old_dx + nLayout.dx) * (nLayout.old_dx + nLayout.dx) + (nLayout.old_dy + nLayout.dy) * (nLayout.old_dy + nLayout.dy)) / 2;
                     
-                    double nodespeed = nLayout.convergenceEstimation * Math.log(1 + traction) / (1 + Math.sqrt(swinging));
+                    double nodespeed = nLayout.convergenceEstimation * Math.log(1 + traction) / (1 + Math.sqrt(swinging)) / slowDown;
                     
                     nLayout.convergenceEstimation = Math.min(1, Math.sqrt(nodespeed * (nLayout.dx * nLayout.dx + nLayout.dy * nLayout.dy)) / (1 + Math.sqrt(swinging)));
                     

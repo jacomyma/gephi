@@ -138,6 +138,7 @@ public class ForceAtlas2 implements Layout {
 
     @Override
     public void goAlgo() {
+        System.out.println(String.valueOf(layout_step) + "," + String.valueOf(computeNeal(graphModel.getHierarchicalGraph())));
         // Initialize graph data
         if (graphModel == null) {
             return;
@@ -271,9 +272,13 @@ public class ForceAtlas2 implements Layout {
                     // Adaptive auto-speed: the speed of each node is lowered
                     // when the node swings.
                     double swinging = Math.sqrt((nLayout.old_dx - nLayout.dx) * (nLayout.old_dx - nLayout.dx) + (nLayout.old_dy - nLayout.dy) * (nLayout.old_dy - nLayout.dy));
-                    //double factor = speed / (1f + Math.sqrt(speed * swinging));
-                    double factor = speed / (1f + speed * Math.sqrt(swinging));
-
+                    //double factor = speed / (1f + speed * Math.sqrt(swinging));
+                    double factor = 0.1;
+                    double displacement = factor * Math.sqrt(nLayout.dx*nLayout.dx + nLayout.dy*nLayout.dy);
+                    if(displacement>1000){
+                        factor = 1000 / Math.sqrt(nLayout.dx*nLayout.dx + nLayout.dy*nLayout.dy);
+                    }
+                    
                     double x = nData.x() + nLayout.dx * factor;
                     double y = nData.y() + nLayout.dy * factor;
 
@@ -286,6 +291,37 @@ public class ForceAtlas2 implements Layout {
         layout_step++;
         
         graph.readUnlockAll();
+    }
+    
+    public double computeNeal(HierarchicalGraph graph){
+        Node[] nodes = graph.getNodes().toArray();
+        Edge[] edges = graph.getEdgesAndMetaEdges().toArray();
+
+        
+        // We compute Noack's normalized^endv atedge length
+        double card_e = graph.getEdgeCount();
+        double card_n2 = graph.getNodeCount() * graph.getNodeCount();
+        double sum_edges_distances = 0;
+        for(Edge e : edges){
+            NodeData sourceData = e.getSource().getNodeData();
+            NodeData targetData = e.getTarget().getNodeData();
+            double distance = Math.sqrt((sourceData.x() - targetData.x())*(sourceData.x() - targetData.x()) + (sourceData.y() - targetData.y())*(sourceData.y() - targetData.y()));
+            sum_edges_distances += distance;
+        }
+        double sum_npairs_distances = 0;
+        for (Node n1 : nodes) {
+            NodeData nData1 = n1.getNodeData();
+            for (Node n2 : nodes) {
+                NodeData nData2 = n2.getNodeData();
+                if(n1.getId() < n2.getId()){
+                    double distance = Math.sqrt((nData1.x() - nData2.x())*(nData1.x() - nData2.x()) + (nData1.y() - nData2.y())*(nData1.y() - nData2.y()));
+                    sum_npairs_distances += distance;
+                }
+            }
+        }
+        double neal = (sum_edges_distances / card_e) / (sum_npairs_distances / card_n2);
+        
+        return neal;
     }
     
     @Override
